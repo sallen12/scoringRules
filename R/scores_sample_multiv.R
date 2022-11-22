@@ -143,7 +143,7 @@ mmds_sample <- function(y, dat, w = NULL) {
   w <- w.helper.multiv(dat, w)
   # note that order of xx and xy parts is reverse to Energy Score
   # (since underlying kernels are in reverse orientation)
-  mmds <- .5*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w)
+  mmds <- .5*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w) + 0.5
   return(mmds)
 }
 
