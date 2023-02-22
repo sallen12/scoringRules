@@ -207,8 +207,8 @@ double imsC(arma::colvec y, arma::mat dat, NumericVector w){
   
   double s2 = 0;
   for (int i = 1; i < (m+1); i++) {
-    for (int j = 1; j < (m+1); j++) {
-      s2 += w[i-1]*w[j-1]*imskernelC(dat.col(i-1) - dat.col(j-1));
+    for (int j = (i+1); j < (m+1); j++) {
+      s2 += 2*w[i-1]*w[j-1]*imskernelC(dat.col(i-1) - dat.col(j-1));
     }
   }
   

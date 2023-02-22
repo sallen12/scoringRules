@@ -164,8 +164,6 @@ ims_sample <- function(y, dat, w = NULL) {
   input <- list(y = y, dat = dat)
   check.multivsample(input)
   w <- w.helper.multiv(dat, w)
-  # note that order of xx and xy parts is reverse to Energy Score
-  # (since underlying kernels are in reverse orientation)
   ims <- imsC(y, dat, w)
   return(ims)
 }
