@@ -113,3 +113,11 @@ mmdsC_xy <- function(y, dat, w) {
     .Call(`_scoringRules_mmdsC_xy`, y, dat, w)
 }
 
+imskernelC <- function(x) {
+    .Call(`_scoringRules_imskernelC`, x)
+}
+
+imsC <- function(y, dat, w) {
+    .Call(`_scoringRules_imsC`, y, dat, w)
+}
+

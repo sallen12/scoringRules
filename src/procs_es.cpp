@@ -60,7 +60,6 @@ double vskernelC(arma::colvec x1, arma::colvec x2, arma::mat w_vs, double p){
   return(out);
 }
 
-
 // function for variogram score when weights w are specified
 // [[Rcpp::export]]
 double vsC_w(arma::colvec y, arma::mat dat, arma::mat w_vs, arma::colvec w, double p){
@@ -134,7 +133,6 @@ double esC_xy(arma::colvec y, arma::mat dat, NumericVector w){
   
 }
 
-
 // complete function kept for now; however, exported R function "mmds_sample" uses separate component functions 
 // for "XX" and "XY" parts of score (see below)
 // [[Rcpp::export]]
@@ -186,6 +184,37 @@ double mmdsC_xy(arma::colvec y, arma::mat dat, NumericVector w){
     out += w[i-1]*exp(-0.5*pow(euclnormC(dat.col(i-1) - y), 2.0));
   }
   
+  return (out);
+  
+}
+
+// ims kernel
+// [[Rcpp::export]]
+double imskernelC(arma::colvec x){
+  double out = -pow(1 + pow(euclnormC(x), 2.0), -0.50);
+  return(out);
+}
+
+// inverse multiquadric score
+// [[Rcpp::export]]
+double imsC(arma::colvec y, arma::mat dat, NumericVector w){
+  
+  double s1 = 0;
+  double m = dat.n_cols;
+  for (int i = 1; i < (m+1); i++) {
+    s1 += w[i-1]*imskernelC(dat.col(i-1) - y);
+  }
+  
+  double s2 = 0;
+  for (int i = 1; i < (m+1); i++) {
+    for (int j = 1; j < (m+1); j++) {
+      s2 += w[i-1]*w[j-1]*imskernelC(dat.col(i-1) - dat.col(j-1));
+    }
+  }
+  
+  double s3 = imskernelC(y - y);
+  
+  double out = s1 - s2 / 2 - s3 / 2;
   return (out);
   
 }

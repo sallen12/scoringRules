@@ -2,9 +2,10 @@
 #' 
 #' Compute multivariate scores of the form \eqn{S(y, dat)}, where \eqn{S} is a
 #' proper scoring rule, \eqn{y} is a d-dimensional realization vector and 
-#' \eqn{dat} is a simulated sample of multivariate forecasts. Three scores
-#' are available: The energy score, a score based on a Gaussian kernel 
-#' (\link{mmds_sample}, see details below) and the variogram score of order \eqn{p}.
+#' \eqn{dat} is a simulated sample of multivariate forecasts. Four scores
+#' are available: The energy score, scores based on a Gaussian and inverse 
+#' multiquadric kernel (\link{mmds_sample} and \link{ims_sample}, see details
+#' below), and the variogram score of order \eqn{p}.
 #' 
 #' @param y realized values (numeric vector of length d).
 #' @param dat numeric matrix of data
@@ -23,9 +24,9 @@
 #' thus has to match the length of the observation vector \code{y}, and the
 #' number of columns of \code{dat} is the number of simulated samples.
 #' 
-#' In \link{es_sample} and \link{mmds_sample} it is possible to specify a vector \code{w} of weights 
-#' attached to each forecast draw (i.e. each column of matrix \code{dat}). These
-#' weights are analogous to the input \code{w} in \link{crps_sample}. 
+#' In all scores, it is possible to specify a vector \code{w} of weights 
+#' attached to each forecast draw (i.e. each column of matrix \code{dat}). 
+#' These weights are analogous to the input \code{w} in \link{crps_sample}. 
 #' 
 #' In \link{vs_sample} it is possible to specify a matrix \code{w_vs} of
 #' non-negative weights that allow to emphasize or downweight pairs of
@@ -36,14 +37,15 @@
 #' corresponding \eqn{i}-th and \eqn{j}-th component. A small example is provided below. 
 #' For details and further examples, see Scheuerer and Hamill (2015).
 #' 
-#' The `MMD score' in \link{mmds_sample} is a kernel scoring rule as described in 
-#' Gneiting and Raftery (2007, Section 5). As for all other scores, 
-#' we use a negative orientation, such that a smaller score corresponds to a better
-#' forecast. We use a Gaussian kernel with standard deviation 1. This kernel is
-#' the same as the one obtained by setting \code{rbfdot(sigma = .5)} in the 
-#' R package kernlab (Karatzoglou et al., 2004). The naming prefix `MMD' is 
-#' motivated by the machine learning literature on two sample testing 
-#' (e.g. Gretton et al., 2012), where this type of kernel function is popular. 
+#' The `MMD score' in \link{mmds_sample} and the `IMS score' in \link{ims_sample}
+#' are kernel scoring rules as described in Gneiting and Raftery (2007, Section 5). 
+#' As for all other scores, we use a negative orientation, such that a smaller 
+#' score corresponds to a better forecast. For the MMD score, we use a Gaussian 
+#' kernel with standard deviation 1. This kernel is the same as the one obtained
+#' by setting \code{rbfdot(sigma = .5)} in the R package kernlab 
+#' (Karatzoglou et al., 2004). The naming prefix `MMD' is motivated by the 
+#' machine learning literature on two sample testing (e.g. Gretton et al., 2012), 
+#' where this type of kernel function is popular. 
 #' 
 #' @return
 #' Value of the score. \emph{A lower score indicates a better forecast.}
@@ -77,7 +79,14 @@
 #' `Variogram-based proper scoring rules for probabilistic forecasts of
 #' multivariate quantities',
 #' Monthly Weather Review, 143, 1321-1334. \doi{10.1175/mwr-d-14-00269.1}
+#'
+#' \emph{Inverse multiquadric score}
 #' 
+#' Allen, S., Ginsbourger, D. and J. Ziegel (2022): 
+#' `Evaluating forecasts for high-impact events using transformed kernel scores', 
+#' \emph{arXiv preprint} arXiv:2202.12732.
+#' \doi{10.48550/arXiv.2202.12732}
+#'
 #' @author Maximiliane Graeter, Sebastian Lerch, Fabian Krueger
 #' 
 #' @examples
@@ -145,6 +154,20 @@ mmds_sample <- function(y, dat, w = NULL) {
   # (since underlying kernels are in reverse orientation)
   mmds <- .5*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w) + 0.5
   return(mmds)
+}
+
+################################################################################
+# inverse multiquadric score
+#' @rdname scores_sample_multiv
+#' @export
+ims_sample <- function(y, dat, w = NULL) {
+  input <- list(y = y, dat = dat)
+  check.multivsample(input)
+  w <- w.helper.multiv(dat, w)
+  # note that order of xx and xy parts is reverse to Energy Score
+  # (since underlying kernels are in reverse orientation)
+  ims <- imsC(y, dat, w)
+  return(ims)
 }
 
 ################################################################################

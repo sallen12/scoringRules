@@ -388,6 +388,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// imskernelC
+double imskernelC(arma::colvec x);
+RcppExport SEXP _scoringRules_imskernelC(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::colvec >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(imskernelC(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// imsC
+double imsC(arma::colvec y, arma::mat dat, NumericVector w);
+RcppExport SEXP _scoringRules_imsC(SEXP ySEXP, SEXP datSEXP, SEXP wSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::colvec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< arma::mat >::type dat(datSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
+    rcpp_result_gen = Rcpp::wrap(imsC(y, dat, w));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_scoringRules_auxcrpsC", (DL_FUNC) &_scoringRules_auxcrpsC, 2},
@@ -418,6 +442,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scoringRules_mmdscoreC", (DL_FUNC) &_scoringRules_mmdscoreC, 3},
     {"_scoringRules_mmdsC_xx", (DL_FUNC) &_scoringRules_mmdsC_xx, 2},
     {"_scoringRules_mmdsC_xy", (DL_FUNC) &_scoringRules_mmdsC_xy, 3},
+    {"_scoringRules_imskernelC", (DL_FUNC) &_scoringRules_imskernelC, 1},
+    {"_scoringRules_imsC", (DL_FUNC) &_scoringRules_imsC, 3},
     {NULL, NULL, 0}
 };
 
