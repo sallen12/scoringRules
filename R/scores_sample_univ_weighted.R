@@ -2,7 +2,7 @@
 #' 
 #' Calculate weighted scores given observations and draws from univariate predictive distributions.
 #' The weighted scoring rules that are available are the threshold-weighted CRPS, outcome-weighted CRPS, 
-#' and conditional and censored likelihood scores. 
+#' vertically re-scaled CRPS, and conditional and censored likelihood scores. 
 #' 
 #' @param y vector of realized values.
 #' @param dat vector or matrix (depending on \code{y}; see details)
@@ -13,6 +13,7 @@
 #' the default corresponds to the weight function \code{w(z) = 1{a < z < b}}.
 #' @param weight_func function used to target particular outcomes in the outcome-weighted CRPS; 
 #' the default corresponds to the weight function \code{w(z) = 1{a < z < b}}.
+#' @param x0 numeric value at which to centre the vertically re-scaled CRPS.
 #' @param w optional; vector or matrix (matching \code{dat}) of ensemble weights. 
 #'  Note that these weights are not used in the weighted scoring rules; see details.
 #' @param bw optional; vector (matching \code{y}) of bandwidths for kernel density
@@ -243,6 +244,44 @@ owcrps_sample <- function (y, dat, a = -Inf, b = Inf, weight_func = function(x) 
     }
   }
   crps_sample(y, dat, method = "edf", w = w, show_messages = show_messages)*w_y
+}
+
+################################################################################
+# vertically re-scaled CRPS
+
+#' @rdname scores_sample_univ_weighted
+#' @export
+vrcrps_sample <- function (y, dat, a = -Inf, b = Inf, weight_func = function(x) as.numeric(x > a & x < b), 
+                           x0 = 0, w = NULL) {
+  input <- list(lower = a, upper = b, w = weight_func, y = y)
+  check_weight(input)
+  w_y <- weight_func(y)
+  kern <- function(x1, x2, x0) abs(x1 - x2) - abs(x1 - x0) - abs(x2 - x0)
+  if (is.vector(dat)) {
+    w_dat <- sapply(dat, weight_func)
+    if (is.null(w)) {
+      w <- rep(1/length(dat), length(dat))
+    } else {
+      sum_w <- sum(w)
+      w <- w/sum_w
+    }
+    s1 <- sum(kern(dat, y, x0)*w_dat*w_y*w)
+    s2 <- sum(sapply(1:ncol(dat), function(m) sum(kern(dat, dat[m], x0)*w_dat*w_dat[m]*w*w[m])))
+  } else {
+    w_dat <- apply(dat, 2, weight_func)
+    if (is.null(w)) {
+      w <- array(1/ncol(dat), dim(dat))
+    } else {
+      sum_w <- rowSums(w)
+      w <- w/sum_w
+    }
+    s1 <- rowSums(kern(dat, y, x0)*w_dat*w_y*w)
+    s2 <- rowSums(sapply(1:ncol(dat), function(m) 
+      rowSums(kern(dat, dat[, m], x0)*w_dat*w_dat[, m]*w*w[, m])))
+  }
+  s3 <- kern(y, y, x0)*(w_y^2)
+  score <- s1 - s2/2 - s3/2
+  return (score)
 }
 
 ################################################################################

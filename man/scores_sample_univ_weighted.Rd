@@ -4,6 +4,7 @@
 \alias{scores_sample_univ_weighted}
 \alias{twcrps_sample}
 \alias{owcrps_sample}
+\alias{vrcrps_sample}
 \alias{clogs_sample}
 \title{Weighted Scoring Rules for Simulated Forecast Distributions}
 \usage{
@@ -25,6 +26,16 @@ owcrps_sample(
   weight_func = function(x) as.numeric(x > a & x < b),
   w = NULL,
   show_messages = TRUE
+)
+
+vrcrps_sample(
+  y,
+  dat,
+  a = -Inf,
+  b = Inf,
+  weight_func = function(x) as.numeric(x > a & x < b),
+  x0 = 0,
+  w = NULL
 )
 
 clogs_sample(
@@ -59,6 +70,8 @@ warnings and errors).}
 \item{weight_func}{function used to target particular outcomes in the outcome-weighted CRPS; 
 the default corresponds to the weight function \code{w(z) = 1{a < z < b}}.}
 
+\item{x0}{numeric value at which to centre the vertically re-scaled CRPS.}
+
 \item{bw}{optional; vector (matching \code{y}) of bandwidths for kernel density
 estimation for \code{\link{clogs_sample}}; see details.}
 
@@ -72,7 +85,7 @@ Value of the score. \emph{A lower score indicates a better forecast.}
 \description{
 Calculate weighted scores given observations and draws from univariate predictive distributions.
 The weighted scoring rules that are available are the threshold-weighted CRPS, outcome-weighted CRPS, 
-and conditional and censored likelihood scores.
+vertically re-scaled CRPS, and conditional and censored likelihood scores.
 }
 \details{
 For a vector \code{y} of length n, \code{dat} should be given as a matrix
