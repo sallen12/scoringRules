@@ -5,6 +5,10 @@
 
 An R package to compute scoring rules for fixed (parametric) and simulated forecast distributions. Authored by Alexander Jordan (Heidelberg Institute for Theoretical Studies (HITS)), Fabian Krüger (Karlsruhe Institute of Technology (KIT)), Sebastian Lerch (KIT and HITS) and Sam Allen (University of Bern), with contributions from Maximiliane Graeter (KIT). 
 
+This developmental branch differs from the main branch in the following ways:
+  - It contains the inverse multiquadric score to evaluate multivariate forecasts;
+  - It contains the vertically re-scaled CRPS for forecasts in the form of predictive samples. 
+
 ## Highlights
   - Coherent, dictionary-like reference for computing scoring rules in a wide range of situations
   - Previously unavailable closed-form expressions of the CRPS for many parametric distributions
