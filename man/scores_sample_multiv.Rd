@@ -12,8 +12,11 @@ es_sample(y, dat, w = NULL)
 
 mmds_sample(y, dat, w = NULL)
 
+<<<<<<< HEAD
 ims_sample(y, dat, w = NULL)
 
+=======
+>>>>>>> master
 vs_sample(y, dat, w = NULL, w_vs = NULL, p = 0.5)
 }
 \arguments{
@@ -147,6 +150,9 @@ Allen, S., Ginsbourger, D. and J. Ziegel (2022):
 `Evaluating forecasts for high-impact events using transformed kernel scores', 
 \emph{arXiv preprint} arXiv:2202.12732.
 \doi{10.48550/arXiv.2202.12732}
+}
+\seealso{
+\code{\link{scores_sample_multiv_weighted}} for weighted versions of the scoring rules documented here.
 }
 \author{
 Maximiliane Graeter, Sebastian Lerch, Fabian Krueger

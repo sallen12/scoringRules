@@ -43,7 +43,10 @@ double vsC_w_vs(arma::colvec y, arma::mat dat, arma::mat w_vs, double p){
   return (out);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 // variogram score kernel
 // [[Rcpp::export]]
 double vskernelC(arma::colvec x1, arma::colvec x2, arma::mat w_vs, double p){
