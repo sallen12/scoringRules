@@ -205,7 +205,7 @@ Note that in the multivariate case, the weight function takes a vector as an arg
 
 The premise behind this class of weighted scoring rules is that, if attention is only on a particular set of outcomes, then the forecasts are only evaluated when these outcomes occur. When these outcomes do occur, the forecast distributions are evaluated using the conditional distribution given that the outcome of interest has occurred. In considering the conditional distribution given that an outcome of interest has occurred, the score does not consider the predicted probability that this outcome will occur. The CeLS extends the CoLS to address this, and suitable adaptations of the larger class of outcome-weighted scoring rules also exist, though these are not considered here \citep[see][]{HolzmannKlar2017}. 
 
-Moreover, these scores are clearly not well-defined if the conditional distribution does not exist. This is equivalent to $\bar{w}_{F}$ being equal to zero, which could occur, for example, if $w(z) = \ind\{ z \in \cA \}$ and the forecast distribution assigns zero probability to the region $\cA$. The use of these outcome-weighted scoring rules is therefore only recommended when the weight function is strictly positive, or when interest is on events that are not rare, such that $\bar{w}_{F}$ is non-zero \citep{AllenEtAl2022b}.
+Moreover, these scores are clearly not well-defined if the conditional distribution does not exist. This is equivalent to $\bar{w}_{F}$ being equal to zero, which could occur, for example, if $w(z) = \ind\{ z \in \cA \}$ and the forecast distribution assigns zero probability to the region $\cA$. The use of these outcome-weighted scoring rules is therefore only recommended when the weight function is strictly positive, or when interest is on events that are not rare, such that $\bar{w}_{F}$ is non-zero \citep{AllenEtAl2023}.
 
 
 \subsubsection{Threshold-weighted scoring rules}
@@ -265,7 +265,7 @@ Similar weight functions can also be used in the multivariate case. For example,
 \begin{equation}\label{eq:mv_thr_weight}
     w(\mathbf{z}) = \ind\{a_{1} < z_{1} < b_{1}, \dots, a_{d} < z_{d} < b_{d} \} \quad \text{for} \quad - \infty \leq a_{i} < b_{i} \leq \infty, \quad i = 1, \dots, d.
 \end{equation}
-As in the univariate case, some values of the vectors $\mathbf{a} = (a_{1}, \dots, a_{d}) $ and $\mathbf{b} = (b_{1}, \dots, b_{d})$ can be set to $\pm \infty$ in order to focus on threshold exceedances. Multivariate Gaussian distribution and density functions could then again be used to target particular regions of multivariate space in a smoother way \citep{AllenEtAl2022b}. These weight functions are listed in Table \ref{tab:weight_funcs}.
+As in the univariate case, some values of the vectors $\mathbf{a} = (a_{1}, \dots, a_{d}) $ and $\mathbf{b} = (b_{1}, \dots, b_{d})$ can be set to $\pm \infty$ in order to focus on threshold exceedances. Multivariate Gaussian distribution and density functions could then again be used to target particular regions of multivariate space in a smoother way \citep{AllenEtAl2023}. These weight functions are listed in Table \ref{tab:weight_funcs}.
 
 \renewcommand*{\arraystretch}{1.5}
 \begin{table}
