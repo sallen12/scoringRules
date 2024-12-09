@@ -7,9 +7,9 @@
 \alias{vs_sample}
 \title{Multivariate Scoring Rules for Simulated Forecast Distributions}
 \usage{
-es_sample(y, dat, w = NULL)
+es_sample(y, dat, w = NULL, fair = FALSE)
 
-mmds_sample(y, dat, w = NULL)
+mmds_sample(y, dat, w = NULL, fair = FALSE)
 
 vs_sample(y, dat, w = NULL, w_vs = NULL, p = 0.5)
 }
@@ -20,6 +20,9 @@ vs_sample(y, dat, w = NULL, w_vs = NULL, p = 0.5)
 (columns are simulation draws from multivariate forecast distribution).}
 
 \item{w}{numeric vector of weights for forecast draws (length equal to number of columns of \code{dat})}
+
+\item{fair}{logical specifying whether to implement the fair version of the score. 
+Default is \code{FALSE}.}
 
 \item{w_vs}{numeric matrix of weights for \code{dat} used in the variogram
 score. This matrix must be square and symmetric, with all elements being non-negative.

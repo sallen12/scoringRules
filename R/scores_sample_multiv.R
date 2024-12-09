@@ -16,6 +16,8 @@
 #' equal to one) are used.
 #' @param p order of variogram score. Standard choices include \eqn{p = 1} and
 #' \eqn{p = 0.5}.
+#' @param fair logical specifying whether to implement the fair version of the score. 
+#'  Default is \code{FALSE}.
 #' 
 #' @details
 #' In the input matrix \code{dat} each column is expected to represent a sample
@@ -127,11 +129,17 @@ NULL
 # energy score
 #' @rdname scores_sample_multiv
 #' @export
-es_sample <- function(y, dat, w = NULL) {
+es_sample <- function(y, dat, w = NULL, fair = FALSE) {
   input <- list(y = y, dat = dat)
   check.multivsample(input)
   w <- w.helper.multiv(dat, w)
-  es <- esC_xy(y, dat, w) - .5*esC_xx(dat, w)
+  if (fair) {
+    M <- ncol(dat)
+    con <- M / (M - 1)
+    es <- esC_xy(y, dat, w) - .5*con*esC_xx(dat, w)
+  } else {
+    es <- esC_xy(y, dat, w) - .5*esC_xx(dat, w)
+  }
   return(es)
 }
 
@@ -139,13 +147,19 @@ es_sample <- function(y, dat, w = NULL) {
 # MMD score
 #' @rdname scores_sample_multiv
 #' @export
-mmds_sample <- function(y, dat, w = NULL) {
+mmds_sample <- function(y, dat, w = NULL, fair = FALSE) {
   input <- list(y = y, dat = dat)
   check.multivsample(input)
   w <- w.helper.multiv(dat, w)
   # note that order of xx and xy parts is reverse to Energy Score
   # (since underlying kernels are in reverse orientation)
-  mmds <- .5*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w)
+  if (fair) {
+    M <- ncol(dat)
+    con <- M / (M - 1)
+    mmds <- .5*con*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w)
+  } else {
+    mmds <- .5*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w)
+  }
   return(mmds)
 }
 
