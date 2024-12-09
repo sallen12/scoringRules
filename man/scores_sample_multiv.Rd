@@ -5,6 +5,7 @@
 \alias{es_sample}
 \alias{mmds_sample}
 \alias{vs_sample}
+\alias{dss_mvsample}
 \title{Multivariate Scoring Rules for Simulated Forecast Distributions}
 \usage{
 es_sample(y, dat, w = NULL, fair = FALSE)
@@ -12,6 +13,8 @@ es_sample(y, dat, w = NULL, fair = FALSE)
 mmds_sample(y, dat, w = NULL, fair = FALSE)
 
 vs_sample(y, dat, w = NULL, w_vs = NULL, p = 0.5)
+
+dss_mvsample(y, dat, composite = FALSE)
 }
 \arguments{
 \item{y}{realized values (numeric vector of length d).}
@@ -31,6 +34,9 @@ equal to one) are used.}
 
 \item{p}{order of variogram score. Standard choices include \eqn{p = 1} and
 \eqn{p = 0.5}.}
+
+\item{composite}{logical specifying whether to implement the composite Dawid-Sebastiani score.
+Default is \code{FALSE}.}
 }
 \value{
 Value of the score. \emph{A lower score indicates a better forecast.}

@@ -18,6 +18,8 @@
 #' \eqn{p = 0.5}.
 #' @param fair logical specifying whether to implement the fair version of the score. 
 #'  Default is \code{FALSE}.
+#' @param composite logical specifying whether to implement the composite Dawid-Sebastiani score.
+#'  Default is \code{FALSE}.
 #' 
 #' @details
 #' In the input matrix \code{dat} each column is expected to represent a sample
@@ -205,6 +207,31 @@ vs_sample <- function(y, dat, w = NULL, w_vs = NULL, p = 0.5) {
   }
   return(out)
 }
+
+
+################################################################################
+# multivariate dawid-sebastiani score
+#' @rdname scores_sample_multiv
+#' @export
+dss_mvsample <- function(y, dat, composite = FALSE) {
+  input <- list(y = y, dat = dat)
+  check.multivsample(input)
+  
+  if (composite) {
+    d <- length(y)
+    out_mat <- sapply(1:(d - 1), function(i) sapply((i + 1):d, function(j) {
+      dss_mvsample(y[c(i, j)], dat[c(i, j), ])
+    }))
+    out <- mean(2*unlist(out_mat))
+  } else {
+    m <- rowMeans(dat)
+    v <- var(t(dat))
+    out <- t(m - y) %*% solve(v) %*% (m - y) + log(det(v))
+  }
+  
+  return(as.vector(out))
+}
+
 
 ################################################################################
 # helper functions
