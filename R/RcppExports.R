@@ -69,8 +69,8 @@ filterMarkovMixtureC <- function(p, P, lnpdat) {
     .Call(`_scoringRules_filterMarkovMixtureC`, p, P, lnpdat)
 }
 
-euclnormC <- function(x) {
-    .Call(`_scoringRules_euclnormC`, x)
+euclnormC <- function(x, beta) {
+    .Call(`_scoringRules_euclnormC`, x, beta)
 }
 
 vsC <- function(y, dat, p) {
@@ -89,16 +89,16 @@ vsC_w <- function(y, dat, w_vs, w, p) {
     .Call(`_scoringRules_vsC_w`, y, dat, w_vs, w, p)
 }
 
-energyscoreC <- function(y, dat, w) {
-    .Call(`_scoringRules_energyscoreC`, y, dat, w)
+energyscoreC <- function(y, dat, w, beta) {
+    .Call(`_scoringRules_energyscoreC`, y, dat, w, beta)
 }
 
-esC_xx <- function(dat, w) {
-    .Call(`_scoringRules_esC_xx`, dat, w)
+esC_xx <- function(dat, w, beta) {
+    .Call(`_scoringRules_esC_xx`, dat, w, beta)
 }
 
-esC_xy <- function(y, dat, w) {
-    .Call(`_scoringRules_esC_xy`, y, dat, w)
+esC_xy <- function(y, dat, w, beta) {
+    .Call(`_scoringRules_esC_xy`, y, dat, w, beta)
 }
 
 mmdscoreC <- function(y, dat, w) {

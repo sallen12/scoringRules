@@ -11,11 +11,12 @@
 #' (columns are simulation draws from multivariate forecast distribution).
 #' @param w numeric vector of weights for forecast draws (length equal to number of columns of \code{dat})
 #' @param w_vs numeric matrix of weights for \code{dat} used in the variogram
-#' score. This matrix must be square and symmetric, with all elements being non-negative.
+#' score and composite scores. This matrix must be square and symmetric, with all elements being non-negative.
 #' If no weights are specified, constant weights (with all elements of \code{w_vs} 
 #' equal to one) are used.
 #' @param p order of variogram score. Standard choices include \eqn{p = 1} and
 #' \eqn{p = 0.5}.
+#' @param beta power of energy score. Must be between 0 and 2.
 #' @param fair logical specifying whether to implement the fair version of the score. 
 #'  Default is \code{FALSE}.
 #' @param composite logical specifying whether to implement the composite Dawid-Sebastiani score.
@@ -131,37 +132,103 @@ NULL
 # energy score
 #' @rdname scores_sample_multiv
 #' @export
-es_sample <- function(y, dat, w = NULL, fair = FALSE) {
+es_sample <- function(y, dat, w = NULL, w_vs = NULL, beta = 1, fair = FALSE, composite = FALSE) {
   input <- list(y = y, dat = dat)
   check.multivsample(input)
   w <- w.helper.multiv(dat, w)
-  if (fair) {
-    M <- ncol(dat)
-    con <- M / (M - 1)
-    es <- esC_xy(y, dat, w) - .5*con*esC_xx(dat, w)
+  d <- length(y)
+  if (is.null(w_vs)) {
+    w_vs <- matrix(1, nrow = d, ncol = d)
   } else {
-    es <- esC_xy(y, dat, w) - .5*esC_xx(dat, w)
+    if (!is.matrix(w_vs)) {
+      stop("'w_vs' is not a matrix ")
+    }
+    if (any(dim(w_vs) != d)) {
+      stop("Dimensions of 'w_vs' do not fit")
+    }
+    if (any(w_vs < 0)) {
+      stop("Weighting matrix 'w_vs' contains negative values")
+    }
+    if (!isSymmetric(w_vs)) {
+      stop("Weighting matrix 'w_vs' is not symmetric")
+    }
   }
+  if (!is.numeric(beta) || length(beta) != 1 ){
+    stop("Power 'beta' must be numeric of length 1")
+  } else if ((beta <= 0) || (beta > 2)) {
+    stop("Power 'beta' must be larger than 0 and no greater than 2")
+  }
+  
+  if (composite) {
+    out_mat <- matrix(NA, nrow = d, ncol = d)
+    for (i in 1:d) {
+      for (j in i:d) {
+        out_mat[i, j] <- out_mat[j, i] <- es_sample(y[c(i, j)], dat[c(i, j), ], w = w, beta = beta, fair = fair)
+      }
+    }
+    diag(out_mat) <- 0
+    es <- sum(w_vs*out_mat)
+  } else {
+    if (fair) {
+      M <- ncol(dat)
+      con <- M / (M - 1)
+      es <- esC_xy(y, dat, w, beta) - .5*con*esC_xx(dat, w, beta)
+    } else {
+      es <- esC_xy(y, dat, w, beta) - .5*esC_xx(dat, w, beta)
+    }
+  }
+
   return(es)
 }
+
 
 ################################################################################
 # MMD score
 #' @rdname scores_sample_multiv
 #' @export
-mmds_sample <- function(y, dat, w = NULL, fair = FALSE) {
+mmds_sample <- function(y, dat, w = NULL, w_vs = NULL, fair = FALSE, composite = FALSE) {
   input <- list(y = y, dat = dat)
   check.multivsample(input)
   w <- w.helper.multiv(dat, w)
+  d <- length(y)
+  if (is.null(w_vs)) {
+    w_vs <- matrix(1, nrow = d, ncol = d)
+  } else {
+    if (!is.matrix(w_vs)) {
+      stop("'w_vs' is not a matrix ")
+    }
+    if (any(dim(w_vs) != d)) {
+      stop("Dimensions of 'w_vs' do not fit")
+    }
+    if (any(w_vs < 0)) {
+      stop("Weighting matrix 'w_vs' contains negative values")
+    }
+    if (!isSymmetric(w_vs)) {
+      stop("Weighting matrix 'w_vs' is not symmetric")
+    }
+  }
+  
   # note that order of xx and xy parts is reverse to Energy Score
   # (since underlying kernels are in reverse orientation)
-  if (fair) {
-    M <- ncol(dat)
-    con <- M / (M - 1)
-    mmds <- .5*con*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w)
+  if (composite) {
+    out_mat <- matrix(NA, nrow = d, ncol = d)
+    for (i in 1:d) {
+      for (j in i:d) {
+        out_mat[i, j] <- out_mat[j, i] <- mmds_sample(y[c(i, j)], dat[c(i, j), ], w = w, fair = fair)
+      }
+    }
+    diag(out_mat) <- 0
+    mmds <- sum(w_vs*out_mat)
   } else {
-    mmds <- .5*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w)
+    if (fair) {
+      M <- ncol(dat)
+      con <- M / (M - 1)
+      mmds <- .5*con*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w)
+    } else {
+      mmds <- .5*mmdsC_xx(dat, w) - mmdsC_xy(y, dat, w)
+    }
   }
+
   return(mmds)
 }
 
@@ -172,13 +239,12 @@ mmds_sample <- function(y, dat, w = NULL, fair = FALSE) {
 vs_sample <- function(y, dat, w = NULL, w_vs = NULL, p = 0.5) {
   input <- list(y = y, dat = dat)
   check.multivsample(input)
-  d <- length(y)
   # additional input checks for weighting matrix w_vs and order p
   if (!is.null(w_vs)) {
     if (!is.matrix(w_vs)) {
       stop("'w_vs' is not a matrix ")
     }
-    if (any(dim(w_vs) != d)) {
+    if (any(dim(w_vs) != length(y))) {
       stop("Dimensions of 'w_vs' do not fit")
     }
     if (any(w_vs < 0)) {
@@ -193,6 +259,7 @@ vs_sample <- function(y, dat, w = NULL, w_vs = NULL, p = 0.5) {
   } else if (p < 0) {
     stop("Order 'p' must be positive")
   }
+  
   # Compute score 
   if (is.null(w)) {
     if (is.null(w_vs)) {
@@ -201,7 +268,7 @@ vs_sample <- function(y, dat, w = NULL, w_vs = NULL, p = 0.5) {
       out <- vsC_w_vs(y, dat, w_vs, p)
     }
   } else {
-    w_vs <- matrix(1, nrow = length(y), ncol = length(y))
+    if (is.null(w_vs)) w_vs <- matrix(1, nrow = length(y), ncol = length(y))
     w <- w.helper.multiv(dat, w)
     out <- vsC_w(y, dat, w_vs, w, p)
   }

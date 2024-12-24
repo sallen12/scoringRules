@@ -246,13 +246,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // euclnormC
-double euclnormC(arma::colvec x);
-RcppExport SEXP _scoringRules_euclnormC(SEXP xSEXP) {
+double euclnormC(arma::colvec x, double beta);
+RcppExport SEXP _scoringRules_euclnormC(SEXP xSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::colvec >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(euclnormC(x));
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(euclnormC(x, beta));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -313,40 +314,43 @@ BEGIN_RCPP
 END_RCPP
 }
 // energyscoreC
-double energyscoreC(arma::colvec y, arma::mat dat, NumericVector w);
-RcppExport SEXP _scoringRules_energyscoreC(SEXP ySEXP, SEXP datSEXP, SEXP wSEXP) {
+double energyscoreC(arma::colvec y, arma::mat dat, NumericVector w, double beta);
+RcppExport SEXP _scoringRules_energyscoreC(SEXP ySEXP, SEXP datSEXP, SEXP wSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::colvec >::type y(ySEXP);
     Rcpp::traits::input_parameter< arma::mat >::type dat(datSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(energyscoreC(y, dat, w));
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(energyscoreC(y, dat, w, beta));
     return rcpp_result_gen;
 END_RCPP
 }
 // esC_xx
-double esC_xx(arma::mat dat, NumericVector w);
-RcppExport SEXP _scoringRules_esC_xx(SEXP datSEXP, SEXP wSEXP) {
+double esC_xx(arma::mat dat, NumericVector w, double beta);
+RcppExport SEXP _scoringRules_esC_xx(SEXP datSEXP, SEXP wSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::mat >::type dat(datSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(esC_xx(dat, w));
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(esC_xx(dat, w, beta));
     return rcpp_result_gen;
 END_RCPP
 }
 // esC_xy
-double esC_xy(arma::colvec y, arma::mat dat, NumericVector w);
-RcppExport SEXP _scoringRules_esC_xy(SEXP ySEXP, SEXP datSEXP, SEXP wSEXP) {
+double esC_xy(arma::colvec y, arma::mat dat, NumericVector w, double beta);
+RcppExport SEXP _scoringRules_esC_xy(SEXP ySEXP, SEXP datSEXP, SEXP wSEXP, SEXP betaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< arma::colvec >::type y(ySEXP);
     Rcpp::traits::input_parameter< arma::mat >::type dat(datSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(esC_xy(y, dat, w));
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    rcpp_result_gen = Rcpp::wrap(esC_xy(y, dat, w, beta));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -407,14 +411,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_scoringRules_bvarFcstC", (DL_FUNC) &_scoringRules_bvarFcstC, 4},
     {"_scoringRules_drawMultinomC", (DL_FUNC) &_scoringRules_drawMultinomC, 1},
     {"_scoringRules_filterMarkovMixtureC", (DL_FUNC) &_scoringRules_filterMarkovMixtureC, 3},
-    {"_scoringRules_euclnormC", (DL_FUNC) &_scoringRules_euclnormC, 1},
+    {"_scoringRules_euclnormC", (DL_FUNC) &_scoringRules_euclnormC, 2},
     {"_scoringRules_vsC", (DL_FUNC) &_scoringRules_vsC, 3},
     {"_scoringRules_vsC_w_vs", (DL_FUNC) &_scoringRules_vsC_w_vs, 4},
     {"_scoringRules_vskernelC", (DL_FUNC) &_scoringRules_vskernelC, 4},
     {"_scoringRules_vsC_w", (DL_FUNC) &_scoringRules_vsC_w, 5},
-    {"_scoringRules_energyscoreC", (DL_FUNC) &_scoringRules_energyscoreC, 3},
-    {"_scoringRules_esC_xx", (DL_FUNC) &_scoringRules_esC_xx, 2},
-    {"_scoringRules_esC_xy", (DL_FUNC) &_scoringRules_esC_xy, 3},
+    {"_scoringRules_energyscoreC", (DL_FUNC) &_scoringRules_energyscoreC, 4},
+    {"_scoringRules_esC_xx", (DL_FUNC) &_scoringRules_esC_xx, 3},
+    {"_scoringRules_esC_xy", (DL_FUNC) &_scoringRules_esC_xy, 4},
     {"_scoringRules_mmdscoreC", (DL_FUNC) &_scoringRules_mmdscoreC, 3},
     {"_scoringRules_mmdsC_xx", (DL_FUNC) &_scoringRules_mmdsC_xx, 2},
     {"_scoringRules_mmdsC_xy", (DL_FUNC) &_scoringRules_mmdsC_xy, 3},

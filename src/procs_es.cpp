@@ -6,8 +6,8 @@
 using namespace Rcpp;     
 
 // [[Rcpp::export]]
-double euclnormC(arma::colvec x){
-  double out = sqrt(sum(square(x)));
+double euclnormC(arma::colvec x, double beta){
+  double out = pow(sqrt(sum(square(x))), beta);
   return(out);
 }
 
@@ -82,18 +82,18 @@ double vsC_w(arma::colvec y, arma::mat dat, arma::mat w_vs, arma::colvec w, doub
 // complete function kept for now; however, exported R function "es_sample" uses separate component functions 
 // for "XX" and "XY" parts of score (see below)
 // [[Rcpp::export]]
-double energyscoreC(arma::colvec y, arma::mat dat, NumericVector w){
+double energyscoreC(arma::colvec y, arma::mat dat, NumericVector w, double beta){
   
   double s1 = 0;
   double m = dat.n_cols;
   for (int i = 1; i < (m+1); i++) {
-    s1 += w[i-1]*euclnormC(dat.col(i-1) - y);
+    s1 += w[i-1]*euclnormC(dat.col(i-1) - y, beta);
   }
   
   double s2 = 0;
   for (int i = 1; i < (m+1); i++) {
     for (int j = i; j < (m+1); j++) {
-      s2 += 2*w[i-1]*w[j-1]*euclnormC(dat.col(i-1) - dat.col(j-1));
+      s2 += 2*w[i-1]*w[j-1]*euclnormC(dat.col(i-1) - dat.col(j-1), beta);
     }
   }
   
@@ -104,13 +104,13 @@ double energyscoreC(arma::colvec y, arma::mat dat, NumericVector w){
 
 // "XX" part of Energy score
 // [[Rcpp::export]]
-double esC_xx(arma::mat dat, NumericVector w){
+double esC_xx(arma::mat dat, NumericVector w, double beta){
   
   double m = dat.n_cols;
   double out = 0;
   for (int i = 1; i < (m+1); i++) {
     for (int j = i; j < (m+1); j++) {
-      out += 2*w[i-1]*w[j-1]*euclnormC(dat.col(i-1) - dat.col(j-1));
+      out += 2*w[i-1]*w[j-1]*euclnormC(dat.col(i-1) - dat.col(j-1), beta);
     }
   }
   
@@ -120,12 +120,12 @@ double esC_xx(arma::mat dat, NumericVector w){
 
 // "XY" part of Energy score
 // [[Rcpp::export]]
-double esC_xy(arma::colvec y, arma::mat dat, NumericVector w){
+double esC_xy(arma::colvec y, arma::mat dat, NumericVector w, double beta){
   
   double out = 0;
   double m = dat.n_cols;
   for (int i = 1; i < (m+1); i++) {
-    out += w[i-1]*euclnormC(dat.col(i-1) - y);
+    out += w[i-1]*euclnormC(dat.col(i-1) - y, beta);
   }
   
   return (out);
@@ -141,14 +141,14 @@ double mmdscoreC(arma::colvec y, arma::mat dat, NumericVector w){
   double s1 = 0;
   double m = dat.n_cols;
   for (int i = 1; i < (m+1); i++) {
-    s1 += w[i-1]*exp(-0.5*pow(euclnormC(dat.col(i-1) - y), 2.0));
+    s1 += w[i-1]*exp(-0.5*euclnormC(dat.col(i-1) - y, 2.0));
   }
   
   double s2 = 0;
   for (int i = 1; i < (m+1); i++) {
     s2 += pow(w[i-1], 2.0);
     for (int j = (i+1); j < (m+1); j++) {
-      s2 += 2*w[i-1]*w[j-1]*exp(-0.5*pow(euclnormC(dat.col(i-1) - dat.col(j-1)), 2.0));
+      s2 += 2*w[i-1]*w[j-1]*exp(-0.5*euclnormC(dat.col(i-1) - dat.col(j-1), 2.0));
     }
   }
   
@@ -166,7 +166,7 @@ double mmdsC_xx(arma::mat dat, NumericVector w){
   for (int i = 1; i < (m+1); i++) {
     out += pow(w[i-1], 2.0);
     for (int j = (i+1); j < (m+1); j++) {
-      out += 2*w[i-1]*w[j-1]*exp(-0.5*pow(euclnormC(dat.col(i-1) - dat.col(j-1)), 2.0));
+      out += 2*w[i-1]*w[j-1]*exp(-0.5*euclnormC(dat.col(i-1) - dat.col(j-1), 2.0));
     }
   }
 
@@ -181,7 +181,7 @@ double mmdsC_xy(arma::colvec y, arma::mat dat, NumericVector w){
   double out = 0;
   double m = dat.n_cols;
   for (int i = 1; i < (m+1); i++) {
-    out += w[i-1]*exp(-0.5*pow(euclnormC(dat.col(i-1) - y), 2.0));
+    out += w[i-1]*exp(-0.5*euclnormC(dat.col(i-1) - y, 2.0));
   }
   
   return (out);
