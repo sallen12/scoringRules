@@ -14,6 +14,7 @@
 #' @param num_int logical; if TRUE numerical integration is used for method \code{"kde"}.
 #' @param show_messages logical; display of messages (does not affect
 #'  warnings and errors).
+#' @param fair logical; use fair (unbiased) version of the CRPS. 
 #'  
 #' @return
 #' Value of the score. \emph{A lower score indicates a better forecast.}
@@ -81,26 +82,28 @@ NULL
 #' @rdname scores_sample_univ
 #' @export
 crps_sample <- function(y, dat, method = "edf", w = NULL, bw = NULL, 
-                        num_int = FALSE, show_messages = TRUE) {
+                        num_int = FALSE, show_messages = TRUE, fair = FALSE) {
   input <- list(y = y, dat = dat)
   if (method == "edf") {
     if (show_messages) {
       if (!is.null(bw)) message("Parameter 'bw' is ignored for edf method.")
       if (isTRUE(num_int)) message("Parameter 'num_int' is ignored for edf method.")
+      if (fair & !is.null(w)) message("Parameter 'fair' is ignored for edf method when 'w' is not NULL")
     }
     if (!is.null(w)) input$w <- w
     if (identical(length(y), 1L) && is.vector(dat)) {
       check_sample(input)
-      crps_edf(y, dat, w)
+      crps_edf(y, dat, w, fair)
     } else {
       check_sample2(input)
       sapply(seq_along(y),
-             function(i) crps_edf(y[i], dat[i, ], w[i, ]))
+             function(i) crps_edf(y[i], dat[i, ], w[i, ], fair))
     }
   } else if (method == "kde") {
     if (show_messages) {
       if (!is.null(w)) message("Parameter 'w' is ignored for kde method.")
       if (isTRUE(num_int)) message("Used numerical integration for CRPS computation (tolerance = 1e-6).")
+      if (fair) message("Parameter 'fair' is ignored for kde method.")
     }
     if (!is.null(bw)) input$bw <- bw
     if (identical(length(y), 1L) && is.vector(dat)) {
@@ -159,11 +162,18 @@ dss_sample <- function(y, dat, w = NULL) {
 #### helper functions ####
 
 # (weighted) empirical distribution
-crps_edf <- function(y, dat, w = NULL) {
+crps_edf <- function(y, dat, w = NULL, fair = FALSE) {
   if (is.null(w)) {
-    c_1n <- 1 / length(dat)
+    M <- length(dat)
+    c_1n <- 1 / M
     x <- sort(dat)
-    a <- seq.int(0.5 * c_1n, 1 - 0.5 * c_1n, length.out = length(dat))
+    if (fair) {
+      c_2n <- 1 / (M - 1)
+      a <- seq.int(0, 1, length.out = M)
+    } else {
+      a <- seq.int(0.5 * c_1n, 1 - 0.5 * c_1n, length.out = M)
+    }
+    
     f <- function(s) 2 * c_1n * sum(((s < x) - a) * (x - s))
   } else {
     if (!identical(length(dat), length(w)) || any(w < 0, na.rm = TRUE)) {

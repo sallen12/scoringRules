@@ -14,7 +14,8 @@ crps_sample(
   w = NULL,
   bw = NULL,
   num_int = FALSE,
-  show_messages = TRUE
+  show_messages = TRUE,
+  fair = FALSE
 )
 
 logs_sample(y, dat, bw = NULL, show_messages = FALSE)
@@ -40,6 +41,8 @@ estimation; see details.}
 
 \item{show_messages}{logical; display of messages (does not affect
 warnings and errors).}
+
+\item{fair}{logical; use fair (unbiased) version of the CRPS.}
 }
 \value{
 Value of the score. \emph{A lower score indicates a better forecast.}
